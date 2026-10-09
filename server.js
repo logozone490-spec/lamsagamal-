@@ -8,8 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// رابط قاعدة البيانات مع كلمة المرور
-const MONGO_URI = 'mongodb+srv://logozone490_db_user:rUjP5HMsRbKxlIYP@cluster0.tuz726e.mongodb.net/?appName=Cluster0';
+// قراءة رابط قاعدة البيانات من متغيرات البيئة بأمان
+const MONGO_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ تم الاتصال بقاعدة البيانات MongoDB بنجاح!'))
@@ -20,24 +20,68 @@ app.get('/', (req, res) => {
   res.send('🚀 سيرفر لمسة مغربية يعمل وقاعدة البيانات متصلة!');
 });
 
-// 1. مسار جلب جميع المنتجات (GET)
+// 1. مسار جلب جميع المنتجات (GET) - لعرضها للعملاء في المتجر
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({ createdAt: -1 }); // أحدث المنتجات أولاً
     res.json(products);
   } catch (err) {
-    res.status(500).json({ error: 'خطأ في جلب المنتجات' });
+    res.status(500).json({ error: 'خطأ في جلب المنتجات', details: err.message });
   }
 });
 
-// 2. مسار إضافة منتج جديد (POST)
+// 2. مسار جلب منتج واحد بالتفصيل عبر الـ ID
+app.get('/api/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: 'المنتج غير موجود' });
+    }
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: 'خطأ في جلب تفاصيل المنتج', details: err.message });
+  }
+});
+
+// 3. مسار إضافة منتج جديد (POST) - يتيح للعميل إضافة أي عدد من المنتجات
 app.post('/api/products', async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
+    const { name, description, price, image, category, stock } = req.body;
+
+    // التحقق البسيط من البيانات الإلزامية
+    if (!name || !price || !category || !image) {
+      return res.status(400).json({ error: 'يرجى إدخال الحقول الأساسية: الاسم، السعر، التصنيف، ورابط الصورة' });
+    }
+
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      image,
+      category,
+      stock: stock || 10
+    });
+
     const savedProduct = await newProduct.save();
-    res.status(201).json({ message: '✅ تم إضافة المنتج بنجاح!', savedProduct });
+    res.status(201).json({ 
+      message: '✅ تم إضافة المنتج بنجاح!', 
+      savedProduct 
+    });
   } catch (err) {
     res.status(400).json({ error: 'خطأ في إضافة المنتج', details: err.message });
+  }
+});
+
+// 4. مسار حذف منتج (DELETE) - لو العميل حب يحذف أي منتج
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) {
+      return res.status(404).json({ error: 'المنتج المراد حذفه غير موجود' });
+    }
+    res.json({ message: '🗑️ تم حذف المنتج بنجاح!' });
+  } catch (err) {
+    res.status(500).json({ error: 'خطأ أثناء حذف المنتج', details: err.message });
   }
 });
 
