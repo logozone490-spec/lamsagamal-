@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
   res.send('🚀 سيرفر لمسة مغربية يعمل وقاعدة البيانات متصلة!');
 });
 
-// 1. مسار جلب جميع المنتجات (GET) - لعرضها للعملاء في المتجر
+// 1. مسار جلب جميع المنتجات (GET)
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 }); // أحدث المنتجات أولاً
+    const products = await Product.find().sort({ createdAt: -1 });
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: 'خطأ في جلب المنتجات', details: err.message });
@@ -43,12 +43,11 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-// 3. مسار إضافة منتج جديد (POST) - يتيح للعميل إضافة أي عدد من المنتجات
+// 3. مسار إضافة منتج جديد (POST)
 app.post('/api/products', async (req, res) => {
   try {
     const { name, description, price, image, category, stock } = req.body;
 
-    // التحقق البسيط من البيانات الإلزامية
     if (!name || !price || !category || !image) {
       return res.status(400).json({ error: 'يرجى إدخال الحقول الأساسية: الاسم، السعر، التصنيف، ورابط الصورة' });
     }
@@ -72,7 +71,7 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
-// 4. مسار حذف منتج (DELETE) - لو العميل حب يحذف أي منتج
+// 4. مسار حذف منتج (DELETE)
 app.delete('/api/products/:id', async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -86,6 +85,6 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 السيرفر شغال تمام على المنفذ ${PORT}`);
 });
