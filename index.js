@@ -5,15 +5,13 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-
-// Railway بيحدد المنفذ تلقائياً عبر process.env.PORT
 const PORT = process.env.PORT || 8080;
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// تشغيل الملفات الثابتة (مجلد public والمجلد الرئيسي)
+// تشغيل الملفات الثابتة (CSS, JS, الصور)
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
@@ -24,11 +22,9 @@ if (MONGODB_URI) {
     mongoose.connect(MONGODB_URI)
         .then(() => console.log('✅ تم الاتصال بقاعدة البيانات MongoDB بنجاح!'))
         .catch((err) => console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err.message));
-} else {
-    console.warn('⚠️ تنبيه: لم يتم تحديد MONGODB_URI في متغيرات البيئة.');
 }
 
-// عرض الصفحة الرئيسية للموقع
+// الصفحة الرئيسية
 app.get('/', (req, res) => {
     const publicIndex = path.join(__dirname, 'public', 'index.html');
     const rootIndex = path.join(__dirname, 'index.html');
@@ -40,23 +36,18 @@ app.get('/', (req, res) => {
     } else {
         return res.send(`
             <div style="font-family: system-ui, sans-serif; text-align: center; margin-top: 80px; color: #333;">
-                <h1 style="color: #4A90E2; font-size: 2.2rem;">🚀 موقع لمسة جمال يعمل بنجاح!</h1>
-                <p style="font-size: 1.1rem;">السيرفر متصل بقاعدة البيانات وقائم على Railway.</p>
+                <h1 style="color: #4A90E2;">🚀 موقع لمسة جمال يعمل بنجاح!</h1>
+                <p>السيرفر متصل بقاعدة البيانات وقائم على Railway.</p>
             </div>
         `);
     }
 });
 
-// لمنع السيرفر من الانهيار المفاجئ
-process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-});
+// منع الانهيار المفاجئ
+process.on('uncaughtException', (err) => console.error('Uncaught Exception:', err));
+process.on('unhandledRejection', (reason) => console.error('Unhandled Rejection:', reason));
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection:', reason);
-});
-
-// تشغيل السيرفر على جميع الواجهات 0.0.0.0
+// تشغيل السيرفر
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 السيرفر شغال تمام على المنفذ ${PORT}`);
 });
