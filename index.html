@@ -1,506 +1,206 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لمسة مغربية - Lamsa Maghriba</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & ReactDOM -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Google Fonts (Cairo) -->
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; background-color: #fcfaf7; color: #3b2027; margin: 0; padding: 0; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @keyframes slowZoom {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.1); }
-    }
-    .animate-zoom { animation: slowZoom 6s linear infinite alternate; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر لمسة جمال</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header img {
+            max-width: 120px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #6b21a8;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #581c87;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background-color: #3b0764;
+        }
+        .btn-submit:disabled {
+            background-color: #a78bfa;
+            cursor: not-allowed;
+        }
+        .preview-img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="root"></div>
+    <div class="header">
+        <h1>لمسة جمال</h1>
+        <p>لوحة التحكم ونشر المنتجات</p>
+    </div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
-    const LOGO_URL = "https://i.hizliresim.com/pkfnvjhx.jpg";
-    const WHATSAPP_NUMBER = "201066108027";
-    const API_URL = "http://localhost:5000/api/products";
+    <div class="container">
+        <form id="productForm">
+            <div class="form-group">
+                <label for="title">اسم المنتج</label>
+                <input type="text" id="title" placeholder="مثال: بادي اسبلاش" required>
+            </div>
 
-    function App() {
-      const [categories, setCategories] = useState([
-        "الكل", 
-        "العطور والمعطرات", 
-        "العناية والترطيب", 
-        "الدلكة والمقشرات", 
-        "إزالة الشعر"
-      ]);
+            <div class="form-group">
+                <label for="price">السعر</label>
+                <input type="number" id="price" placeholder="250" required>
+            </div>
 
-      const [products, setProducts] = useState([]);
+            <div class="form-group">
+                <label for="category">القسم</label>
+                <select id="category" required>
+                    <option value="">اختر القسم</option>
+                    <option value="العطور والمعطرات">العطور والمعطرات</option>
+                    <option value="العناية بالبشرة">العناية بالبشرة</option>
+                    <option value="مكياج وتجميل">مكياج وتجميل</option>
+                </select>
+            </div>
 
-      // جلب المنتجات تلقائياً من قاعدة البيانات السحابية (MongoDB)
-      useEffect(() => {
-        fetch(API_URL)
-          .then(res => res.json())
-          .then(data => {
-            if (Array.isArray(data)) {
-              setProducts(data);
+            <div class="form-group">
+                <label for="description">وصف المنتج</label>
+                <textarea id="description" rows="3" placeholder="اكتب وصفاً قصيراً للمنتج..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="image">صورة المنتج</label>
+                <input type="file" id="image" accept="image/*" onchange="previewImage(event)">
+                <img id="imagePreview" class="preview-img" alt="معاينة الصورة">
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit">نشر المنتج في المتجر</button>
+        </form>
+    </div>
+
+    <script>
+        let base64Image = '';
+
+        // تحويل الصورة المرفوعة إلى Base64
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64Image = e.target.result;
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = base64Image;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
             }
-          })
-          .catch(err => console.error("خطأ في جلب المنتجات:", err));
-      }, []);
-
-      const heroSlides = [
-        {
-          image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=1200",
-          title: "أسرار الجمال الطبيعي والتراث الأصيل",
-          subtitle: "تشكيلة فاخرة من منتجات العناية والعطور المغربية"
-        },
-        {
-          image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=1200",
-          title: "نقاء ونعومة تليق بأنوثتك",
-          subtitle: "دلكات ومقشرات طبيعية 100% لتوحيد لون البشرة"
         }
-      ];
 
-      const [currentSlide, setCurrentSlide] = useState(0);
+        // إرسال البيانات للسيرفر عبر مسار نسبى (/api/products) يعمل على Railway تلقائياً
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-      useEffect(() => {
-        const timer = setInterval(() => {
-          setCurrentSlide(prev => (prev + 1) % heroSlides.length);
-        }, 5000);
-        return () => clearInterval(timer);
-      }, []);
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'جاري النشر...';
 
-      const [cart, setCart] = useState([]);
-      const [isCartOpen, setIsCartOpen] = useState(false);
-      const [activeCategory, setActiveCategory] = useState("الكل");
-      
-      const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-      const [showLoginModal, setShowLoginModal] = useState(false);
-      const [currentView, setCurrentView] = useState('store');
-      const [username, setUsername] = useState('');
-      const [password, setPassword] = useState('');
+            const productData = {
+                title: document.getElementById('title').value,
+                price: Number(document.getElementById('price').value),
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                image: base64Image
+            };
 
-      const [newProduct, setNewProduct] = useState({ name: '', price: '', category: 'الدلكة والمقشرات', description: '', image: '' });
-      const [newCategoryName, setNewCategoryName] = useState('');
-      const [contactForm, setContactForm] = useState({ name: '', phone: '', message: '' });
+            try {
+                // إرسال الطلب إلى المسار النسبي المباشر دون استخدام localhost
+                let response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
 
-      // نظام اللمس المزدوج أو النقر السريع المخفي للوحة التحكم على اللوجو
-      const lastTapTime = useRef(0);
-      const handleSecretLogoClick = (e) => {
-        e.preventDefault(); 
-        const now = Date.now();
-        const timeSinceLastTap = now - lastTapTime.current;
-        if (timeSinceLastTap < 500 && timeSinceLastTap > 0) {
-          setShowLoginModal(true);
-          lastTapTime.current = 0;
-        } else {
-          lastTapTime.current = now;
-        }
-      };
+                // خطة احتياطية في حال كان المسار المحفوظ /products
+                if (!response.ok) {
+                    response = await fetch('/products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                }
 
-      const addToCart = (product) => {
-        setCart(prev => {
-          const pId = product._id || product.id;
-          const exists = prev.find(item => (item._id || item.id) === pId);
-          if (exists) return prev.map(item => (item._id || item.id) === pId ? { ...item, quantity: item.quantity + 1 } : item);
-          return [...prev, { ...product, quantity: 1 }];
+                if (response.ok) {
+                    alert('✅ تم نشر المنتج في المتجر بنجاح!');
+                    document.getElementById('productForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    base64Image = '';
+                } else {
+                    const errRes = await response.json().catch(() => ({}));
+                    alert('❌ حدث خطأ أثناء حفظ المنتج: ' + (errRes.message || 'يرجى المحاولة لاحقاً'));
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                alert('❌ تعذر الاتصال بالسيرفر، تأكد من تحديث الصفحة وإعادة المحاولة.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'نشر المنتج في المتجر';
+            }
         });
-        setIsCartOpen(true);
-      };
-
-      const handleLogin = (e) => {
-        e.preventDefault();
-        if (username === 'admin' && password === '123456') {
-          setIsAdminLoggedIn(true);
-          setShowLoginModal(false);
-          setCurrentView('admin');
-          setUsername('');
-          setPassword('');
-        } else {
-          alert('بيانات الدخول غير صحيحة');
-        }
-      };
-
-      const handleAddCategory = (e) => {
-        e.preventDefault();
-        if (!newCategoryName.trim()) return;
-        if (categories.includes(newCategoryName.trim())) {
-          alert('هذا القسم موجود مسبقاً!');
-          return;
-        }
-        setCategories([...categories, newCategoryName.trim()]);
-        setNewCategoryName('');
-        alert('تم إضافة القسم الرئيسي بنجاح!');
-      };
-
-      const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setNewProduct(prev => ({ ...prev, image: reader.result }));
-          };
-          reader.readAsDataURL(file); 
-        }
-      };
-
-      // إرسال المنتج الجديد مباشرة للباك اند والسحابة عبر طلب POST
-      const handleAddProduct = async (e) => {
-        e.preventDefault();
-        if (!newProduct.name || !newProduct.price) return;
-
-        const productPayload = {
-          name: newProduct.name,
-          price: parseFloat(newProduct.price),
-          category: newProduct.category || categories[1],
-          description: newProduct.description,
-          image: newProduct.image || LOGO_URL,
-          stock: 10
-        };
-
-        try {
-          const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(productPayload)
-          });
-          const data = await res.json();
-
-          if (res.ok) {
-            setProducts([data.savedProduct, ...products]);
-            setNewProduct({ name: '', price: '', category: categories[1] || 'الدلكة والمقشرات', description: '', image: '' });
-            alert('✅ تم نشر المنتج وحفظه في السحابة بنجاح!');
-            setCurrentView('store');
-          } else {
-            alert('خطأ: ' + (data.error || 'فشل في الحفظ'));
-          }
-        } catch (err) {
-          alert('تعذر الاتصال بالسيرفر، تأكد من تشغيله.');
-        }
-      };
-
-      const handleContactSubmit = (e) => {
-        e.preventDefault();
-        const text = `مرحباً، أود التواصل مع مراسلتكم من خلال المتجر:%0A%0A*الاسم:* ${contactForm.name}%0A*رقم الهاتف:* ${contactForm.phone}%0A*الرسالة:* ${contactForm.message}`;
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
-        setContactForm({ name: '', phone: '', message: '' });
-      };
-
-      const checkoutWhatsApp = () => {
-        const itemsText = cart.map(i => `- ${i.name || i.title} (الكمية: ${i.quantity}) - السعر: ${i.price * i.quantity} ج.م`).join('%0A');
-        const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-        const message = `مرحباً، أريـد تأكيد الطلب التالي:%0A${itemsText}%0A%0A*الإجمالي:* ${total} ج.م%0A*طريقة الدفع:* فودافون كاش على رقم ${WHATSAPP_NUMBER}`;
-        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-      };
-
-      const filteredProducts = activeCategory === "الكل" ? products : products.filter(p => p.category === activeCategory);
-
-      return (
-        <div className="min-h-screen flex flex-col bg-[#fcfaf7] text-[#3b2027]">
-          
-          <div className="bg-[#a65e69] text-white text-[11px] font-semibold py-2 px-4 text-center tracking-wide shadow-sm">
-            ✨ لمسة مغربية • الفخامة والنعومة الطبيعية الأصيلة
-          </div>
-
-          <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#f0e6e1] px-4 sm:px-12 py-3 shadow-sm transition-all">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              
-              <div className="flex items-center min-w-[80px]">
-                {isAdminLoggedIn && (
-                  <button onClick={() => setCurrentView(currentView === 'admin' ? 'store' : 'admin')} className="bg-[#a65e69] text-white text-[11px] px-3.5 py-2 rounded-xl font-bold shadow-sm hover:bg-[#8c4d57] transition">
-                    {currentView === 'admin' ? 'المتجر' : 'لوحة التحكم'}
-                  </button>
-                )}
-              </div>
-
-              <div 
-                className="flex items-center justify-center select-none cursor-pointer group" 
-                onClick={handleSecretLogoClick}
-                onTouchStart={handleSecretLogoClick}
-                style={{ touchAction: 'manipulation' }}
-              >
-                <img src={LOGO_URL} alt="لمسة مغربية" className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-[#d4af37] shadow-md bg-white transition-transform duration-300 group-hover:scale-105" />
-              </div>
-
-              <div className="flex items-center justify-end min-w-[80px]">
-                <button onClick={() => setIsCartOpen(true)} className="bg-[#fcfaf7] border border-[#f0e6e1] text-[#a65e69] px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-[#a65e69] hover:text-white transition flex items-center gap-2 group">
-                  <span className="text-base">🛒</span>
-                  <span className="hidden sm:inline">السلة</span>
-                  {cart.length > 0 && (
-                    <span className="bg-[#a65e69] text-white group-hover:bg-white group-hover:text-[#a65e69] text-[10px] px-2 py-0.5 rounded-full font-black transition-colors">
-                      {cart.reduce((s, i) => s + i.quantity, 0)}
-                    </span>
-                  )}
-                </button>
-              </div>
-
-            </div>
-          </header>
-
-          <div className="h-6 sm:h-8"></div>
-
-          {currentView === 'store' ? (
-            <main className="flex-grow">
-              
-              <section className="relative overflow-hidden max-w-7xl mx-auto px-4 sm:px-8 mb-12">
-                <div className="relative rounded-[2rem] overflow-hidden shadow-2xl h-[300px] sm:h-[400px] bg-[#2a1a1f]">
-                  {heroSlides.map((slide, index) => (
-                    <div 
-                      key={index} 
-                      className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
-                    >
-                      <img src={slide.image} className="w-full h-full object-cover object-center opacity-75 animate-zoom" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 sm:p-12 text-center sm:text-right">
-                        <span className="bg-[#a65e69] text-white text-[11px] font-bold px-4 py-1.5 rounded-full w-fit mb-3 mx-auto sm:mx-0 shadow-md">✦ لمسة مغربية أصيلة ✦</span>
-                        <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-2 leading-tight drop-shadow-md">{slide.title}</h2>
-                        <p className="text-xs sm:text-sm text-gray-200 max-w-lg drop-shadow">{slide.subtitle}</p>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                    {heroSlides.map((_, idx) => (
-                      <button 
-                        key={idx} 
-                        onClick={() => setCurrentSlide(idx)}
-                        className={`h-2 rounded-full transition-all duration-300 ${idx === currentSlide ? 'bg-[#d4af37] w-6' : 'bg-white/50 w-2'}`}
-                      ></button>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              <div className="max-w-7xl mx-auto px-4 sm:px-8">
-                
-                <div className="flex items-center justify-start sm:justify-center gap-3 overflow-x-auto pb-4 mb-10 no-scrollbar">
-                  {categories.map((cat, i) => (
-                    <button 
-                      key={i} 
-                      onClick={() => setActiveCategory(cat)} 
-                      className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-300 ${
-                        activeCategory === cat 
-                        ? 'bg-[#a65e69] text-white shadow-lg shadow-[#a65e69]/30 transform scale-105' 
-                        : 'bg-white border border-[#f0e6e1] text-gray-600 hover:bg-[#a65e69]/5 hover:border-[#a65e69]/30'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
-                  {filteredProducts.length === 0 ? (
-                    <div className="col-span-full text-center py-16 text-gray-400">
-                      <p className="text-sm font-bold">لا توجد منتجات مسجلة حالياً. انقر مرتين على اللوجو بالأعلى لفتح لوحة التحكم وإضافة منتجات!</p>
-                    </div>
-                  ) : (
-                    filteredProducts.map(p => (
-                      <div key={p._id || p.id} className="group bg-white rounded-3xl border border-[#f5ece8] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
-                        <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
-                          <img src={p.image || LOGO_URL} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                          <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm text-[#a65e69] text-[10px] font-bold px-3 py-1 rounded-full border border-[#f0e6e1] shadow-sm">
-                            {p.category}
-                          </span>
-                        </div>
-                        <div className="p-5 flex flex-col flex-grow">
-                          <h4 className="font-bold text-sm sm:text-base text-[#3b2027] mb-1.5">{p.name}</h4>
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-4 flex-grow leading-relaxed line-clamp-2">{p.description}</p>
-                          
-                          <div className="pt-4 border-t border-[#fcfaf7] flex items-center justify-between mt-auto">
-                            <div className="flex flex-col">
-                              <span className="text-sm sm:text-base font-black text-[#a65e69]">{p.price} <span className="text-[10px] font-normal text-gray-400">ج.م</span></span>
-                              <span className="text-[9px] text-emerald-600 font-bold mt-0.5 tracking-wide">💳 فودافون كاش</span>
-                            </div>
-                            <button onClick={() => addToCart(p)} className="bg-[#a65e69] hover:bg-[#8c4d57] text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all transform active:scale-95">
-                              أضف للسلة
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {isCartOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsCartOpen(false)}></div>
-                  
-                  <div className="relative bg-white w-full max-w-md h-full flex flex-col p-6 shadow-2xl transform transition-transform">
-                    <div className="flex items-center justify-between border-b border-[#f0e6e1] pb-4">
-                      <h3 className="text-lg font-black text-[#a65e69]">سلة المشتريات</h3>
-                      <button onClick={() => setIsCartOpen(false)} className="text-gray-400 hover:text-gray-700 bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center font-bold transition">✕</button>
-                    </div>
-
-                    <div className="flex-grow overflow-y-auto py-4 space-y-3">
-                      {cart.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-4">
-                          <span className="text-6xl opacity-50">🛒</span>
-                          <p className="text-sm font-bold">السلة فارغة حالياً</p>
-                        </div>
-                      ) : (
-                        cart.map(item => (
-                          <div key={item._id || item.id} className="flex justify-between items-center bg-[#fcfaf7] p-3 rounded-2xl border border-[#f0e6e1] text-xs transition hover:border-[#a65e69]/30">
-                            <div className="flex items-center gap-3">
-                              <img src={item.image} className="w-12 h-12 rounded-xl object-cover border border-[#f0e6e1]" />
-                              <div>
-                                <p className="font-bold text-[#3b2027] mb-0.5">{item.name}</p>
-                                <p className="text-gray-500 font-medium">{item.price} ج.م <span className="mx-1 text-gray-300">×</span> <span className="text-[#a65e69] font-bold">{item.quantity}</span></p>
-                              </div>
-                            </div>
-                            <span className="font-black text-sm text-[#a65e69]">{item.price * item.quantity} ج.م</span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                    {cart.length > 0 && (
-                      <div className="border-t border-[#f0e6e1] pt-5 space-y-4">
-                        <div className="flex justify-between items-center font-bold">
-                          <span className="text-sm text-gray-600">الإجمالي:</span>
-                          <span className="text-xl text-[#a65e69] font-black">{cart.reduce((s, i) => s + (i.price * i.quantity), 0)} ج.م</span>
-                        </div>
-                        <div className="bg-[#fcfaf7] border border-[#f0e6e1] p-3 rounded-xl text-center">
-                          <p className="text-[11px] text-[#a65e69] font-bold">💳 طريقة الدفع: فودافون كاش</p>
-                        </div>
-                        <button onClick={checkoutWhatsApp} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-xl text-sm font-bold shadow-lg transition-colors flex items-center justify-center gap-2">
-                          <span>تأكيد الطلب عبر الواتساب</span>
-                          <span className="text-lg">💬</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <section className="bg-white border-t border-[#f0e6e1] py-16 mt-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                  
-                  <div className="bg-[#fcfaf7] p-8 rounded-[2rem] border border-[#f0e6e1] shadow-sm">
-                    <h3 className="text-2xl font-black text-[#a65e69] mb-1">تواصل معنا</h3>
-                    <p className="text-xs text-gray-500 mb-6 font-medium">سيتم توجيه رسالتك مباشرة لحساب الواتساب الخاص بالمتجر.</p>
-                    <form onSubmit={handleContactSubmit} className="space-y-4">
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-700 mb-1.5 px-1">الاسم</label>
-                        <input type="text" required placeholder="الاسم" value={contactForm.name} onChange={e => setContactForm({...contactForm, name: e.target.value})} className="w-full border border-[#f0e6e1] p-3.5 rounded-2xl text-xs outline-none bg-white focus:ring-2 focus:ring-[#a65e69]/20 focus:border-[#a65e69] transition" />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-700 mb-1.5 px-1">رقم الهاتف</label>
-                        <input type="tel" required placeholder="010XXXXXXXX" value={contactForm.phone} onChange={e => setContactForm({...contactForm, phone: e.target.value})} className="w-full border border-[#f0e6e1] p-3.5 rounded-2xl text-xs outline-none bg-white focus:ring-2 focus:ring-[#a65e69]/20 focus:border-[#a65e69] transition" />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-700 mb-1.5 px-1">الرسالة</label>
-                        <textarea required placeholder="اكتب رسالتك أو استفسارك هنا..." rows="3" value={contactForm.message} onChange={e => setContactForm({...contactForm, message: e.target.value})} className="w-full border border-[#f0e6e1] p-3.5 rounded-2xl text-xs outline-none bg-white focus:ring-2 focus:ring-[#a65e69]/20 focus:border-[#a65e69] transition resize-none"></textarea>
-                      </div>
-                      <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-2xl text-xs font-bold shadow-md transition transform active:scale-[0.98] flex items-center justify-center gap-2">
-                        <span>إرسال عبر الواتساب</span>
-                        <span className="text-base">💬</span>
-                      </button>
-                    </form>
-                  </div>
-
-                  <div className="flex flex-col justify-center space-y-5 px-2">
-                    <div>
-                      <h3 className="text-3xl font-black text-[#3b2027] mb-2">قنوات التواصل الرسمية</h3>
-                      <p className="text-sm text-gray-500 font-medium leading-relaxed">تابع صفحاتنا أو تواصل معنا مباشرة للحصول على أحدث العروض والمنتجات الأصلية.</p>
-                    </div>
-                    
-                    <div className="space-y-3 pt-2">
-                      <a href="https://wa.me/201066108027" target="_blank" className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-[#f0e6e1] text-green-700 font-bold text-xs shadow-sm hover:border-green-400 hover:shadow-md transition-all group">
-                        <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">💬</div>
-                        <div>
-                          <span className="block text-gray-800 text-sm mb-0.5">تواصل عبر الواتساب</span>
-                          <span className="text-gray-400 font-normal">01066108027</span>
-                        </div>
-                      </a>
-                      
-                      <a href="https://www.facebook.com/share/1MYCZHLKLi/" target="_blank" className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-[#f0e6e1] text-blue-700 font-bold text-xs shadow-sm hover:border-blue-400 hover:shadow-md transition-all group">
-                        <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">👥</div>
-                        <span className="block text-gray-800 text-sm">صفحتنا الرسمية على فيسبوك</span>
-                      </a>
-                      
-                      <a href="https://instagram.com/lamsamaghriba" target="_blank" className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-[#f0e6e1] text-pink-700 font-bold text-xs shadow-sm hover:border-pink-400 hover:shadow-md transition-all group">
-                        <div className="w-10 h-10 bg-pink-50 rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📸</div>
-                        <span className="block text-gray-800 text-sm">تابعنا على إنستجرام</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </main>
-
-          ) : (
-            <main className="max-w-xl mx-auto px-4 py-10 flex-grow space-y-6">
-              <div className="bg-white p-8 rounded-3xl border border-[#f0e6e1] shadow-sm space-y-4">
-                <div className="flex justify-between items-center border-b border-[#f0e6e1] pb-4">
-                  <h2 className="font-black text-lg text-[#a65e69]">إضافة قسم رئيسي</h2>
-                  <button onClick={() => setCurrentView('store')} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-bold transition">العودة للمتجر</button>
-                </div>
-                <form onSubmit={handleAddCategory} className="space-y-4">
-                  <input type="text" required placeholder="اسم القسم الجديد" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} className="w-full border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition" />
-                  <button type="submit" className="w-full bg-[#a65e69] text-white py-3.5 rounded-xl text-xs font-bold shadow-md hover:bg-[#8c4d57] transition">إضافة القسم</button>
-                </form>
-              </div>
-
-              <div className="bg-white p-8 rounded-3xl border border-[#f0e6e1] shadow-sm space-y-5">
-                <h2 className="font-black text-lg text-[#a65e69] border-b border-[#f0e6e1] pb-4">إضافة منتج جديد للمتجر</h2>
-                <form onSubmit={handleAddProduct} className="space-y-4">
-                  <input type="text" required placeholder="اسم المنتج" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} className="w-full border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="number" required placeholder="السعر (ج.م)" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} className="border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition" />
-                    <select value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})} className="border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition">
-                      {categories.filter(c => c !== "الكل").map((c, idx) => (<option key={idx} value={c}>{c}</option>))}
-                    </select>
-                  </div>
-                  <textarea placeholder="وصف المنتج..." rows="3" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} className="w-full border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition resize-none"></textarea>
-                  
-                  <div className="bg-[#fcfaf7] p-4 rounded-xl border border-dashed border-[#f0e6e1]">
-                    <label className="block text-[11px] font-bold text-[#a65e69] mb-2">صورة المنتج</label>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full text-xs text-gray-500" />
-                    {newProduct.image && <img src={newProduct.image} className="w-16 h-16 object-cover rounded-lg border mt-3 shadow-sm" />}
-                  </div>
-
-                  <button type="submit" className="w-full bg-[#a65e69] text-white py-4 rounded-xl text-sm font-bold shadow-md hover:bg-[#8c4d57] transition">نشر المنتج في المتجر</button>
-                </form>
-              </div>
-            </main>
-          )}
-
-          {showLoginModal && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-              <div className="bg-white p-8 rounded-[2rem] w-full max-w-sm text-center relative shadow-2xl">
-                <button onClick={() => setShowLoginModal(false)} className="absolute top-5 left-5 text-gray-400 hover:text-gray-700 font-bold bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition">✕</button>
-                <div className="mb-6 mt-2">
-                  <h3 className="font-black text-[#a65e69] text-xl">لوحة التحكم</h3>
-                  <p className="text-[11px] text-gray-400 mt-1">يرجى إدخال بيانات الدخول للصلاحية</p>
-                </div>
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <input type="text" placeholder="اسم المستخدم" value={username} onChange={e => setUsername(e.target.value)} className="w-full border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition text-center" />
-                  <input type="password" placeholder="كلمة المرور" value= {password} onChange={e => setPassword(e.target.value)} className="w-full border border-[#f0e6e1] p-3.5 rounded-xl text-xs outline-none bg-[#fcfaf7] focus:border-[#a65e69] transition text-center" />
-                  <button type="submit" className="w-full bg-[#a65e69] hover:bg-[#8c4d57] text-white py-3.5 rounded-xl text-sm font-bold shadow-md transition mt-2">دخول للمدير</button>
-                </form>
-              </div>
-            </div>
-          )}
-
-          <footer className="bg-white border-t border-[#f0e6e1] text-gray-400 py-6 text-center text-xs mt-auto">
-            <p className="font-medium">© 2026 لمسة مغربية - جميع الحقوق محفوظة</p>
-          </footer>
-
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+    </script>
 </body>
 </html>
