@@ -3,204 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر لمسة جمال</title>
+    <title>لمسة جمال - نشر المنتجات</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         body {
-            background-color: #f8f9fa;
+            background-color: #f2f2f2;
             color: #333;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 15px;
+            min-height: 100vh;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .header img {
-            max-width: 120px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-        .container {
+
+        /* الهيدر العلوي */
+        .navbar {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 5px;
+        }
+        .cart-btn {
+            background: #e0e0e0;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #b8860b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #5c1d24;
+        }
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .store-btn {
+            background-color: #5c1d24;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* كارت النموذج الرئيسي */
+        .card {
+            width: 100%;
+            max-width: 480px;
             background: #ffffff;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .form-group {
             margin-bottom: 15px;
         }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #555;
-        }
-        input, select, textarea {
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background-color: #f9f9f9;
             font-size: 15px;
             outline: none;
-            transition: border 0.2s;
+            text-align: right;
         }
         input:focus, select:focus, textarea:focus {
-            border-color: #6b21a8;
+            border-color: #5c1d24;
+            background-color: #fff;
         }
-        .btn-submit {
-            width: 100%;
-            background-color: #581c87;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
+        .row-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .row-inputs > div {
+            flex: 1;
+        }
+
+        /* مربع رفع ومعاينة الصورة */
+        .image-upload-box {
+            border: 2px dashed #ccc;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            background-color: #fafafa;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
+            position: relative;
+            margin-bottom: 10px;
         }
-        .btn-submit:hover {
-            background-color: #3b0764;
-        }
-        .btn-submit:disabled {
-            background-color: #a78bfa;
-            cursor: not-allowed;
-        }
-        .preview-img {
-            max-width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 10px;
+        .image-upload-box input[type="file"] {
             display: none;
         }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <h1>لمسة جمال</h1>
-        <p>لوحة التحكم ونشر المنتجات</p>
-    </div>
-
-    <div class="container">
-        <form id="productForm">
-            <div class="form-group">
-                <label for="title">اسم المنتج</label>
-                <input type="text" id="title" placeholder="مثال: بادي اسبلاش" required>
-            </div>
-
-            <div class="form-group">
-                <label for="price">السعر</label>
-                <input type="number" id="price" placeholder="250" required>
-            </div>
-
-            <div class="form-group">
-                <label for="category">القسم</label>
-                <select id="category" required>
-                    <option value="">اختر القسم</option>
-                    <option value="العطور والمعطرات">العطور والمعطرات</option>
-                    <option value="العناية بالبشرة">العناية بالبشرة</option>
-                    <option value="مكياج وتجميل">مكياج وتجميل</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="description">وصف المنتج</label>
-                <textarea id="description" rows="3" placeholder="اكتب وصفاً قصيراً للمنتج..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="image">صورة المنتج</label>
-                <input type="file" id="image" accept="image/*" onchange="previewImage(event)">
-                <img id="imagePreview" class="preview-img" alt="معاينة الصورة">
-            </div>
-
-            <button type="submit" id="submitBtn" class="btn-submit">نشر المنتج في المتجر</button>
-        </form>
-    </div>
-
-    <script>
-        let base64Image = '';
-
-        // تحويل الصورة المرفوعة إلى Base64
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64Image = e.target.result;
-                    const preview = document.getElementById('imagePreview');
-                    preview.src = base64Image;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
+        .image-preview {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 10px;
+            display: none;
+            margin: 0 auto;
         }
-
-        // إرسال البيانات للسيرفر عبر مسار نسبى (/api/products) يعمل على Railway تلقائياً
-        document.getElementById('productForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'جاري النشر...';
-
-            const productData = {
-                title: document.getElementById('title').value,
-                price: Number(document.getElementById('price').value),
-                category: document.getElementById('category').value,
-                description: document.getElementById('description').value,
-                image: base64Image
-            };
-
-            try {
-                // إرسال الطلب إلى المسار النسبي المباشر دون استخدام localhost
-                let response = await fetch('/api/products', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(productData)
-                });
-
-                // خطة احتياطية في حال كان المسار المحفوظ /products
-                if (!response.ok) {
-                    response = await fetch('/products', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(productData)
-                    });
-                }
-
-                if (response.ok) {
-                    alert('✅ تم نشر المنتج في المتجر بنجاح!');
-                    document.getElementById('productForm').reset();
-                    document.getElementById('imagePreview').style.display = 'none';
-                    base64Image = '';
-                } else {
-                    const errRes = await response.json().catch(() => ({}));
-                    alert('❌ حدث خطأ أثناء حفظ المنتج: ' + (errRes.message || 'يرجى المحاولة لاحقاً'));
-                }
-            } catch (error) {
-                console.error('Fetch Error:', error);
-                alert('❌ تعذر الاتصال بالسيرفر، تأكد من تحديث الصفحة وإعادة المحاولة.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'نشر المنتج في المتجر';
-            }
-        });
-    </script>
-</body>
-</html>
+        .upload-label {
+            color: #777;
+            font-
