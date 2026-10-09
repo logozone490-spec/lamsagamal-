@@ -2,22 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Middlewares
+app.use(cors()); // السماح بالطلبات من أي مصدر
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// تشغيل الملفات الثابتة (CSS, JS, الصور)
+// تشغيل الملفات الثابتة (CSS, JS, الصور، والواجهة)
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 // الاتصال بقاعدة البيانات
 const MONGODB_URI = process.env.MONGODB_URI;
-
 if (MONGODB_URI) {
     mongoose.connect(MONGODB_URI)
         .then(() => console.log('✅ تم الاتصال بقاعدة البيانات MongoDB بنجاح!'))
@@ -34,12 +35,7 @@ app.get('/', (req, res) => {
     } else if (fs.existsSync(rootIndex)) {
         return res.sendFile(rootIndex);
     } else {
-        return res.send(`
-            <div style="font-family: system-ui, sans-serif; text-align: center; margin-top: 80px; color: #333;">
-                <h1 style="color: #4A90E2;">🚀 موقع لمسة جمال يعمل بنجاح!</h1>
-                <p>السيرفر متصل بقاعدة البيانات وقائم على Railway.</p>
-            </div>
-        `);
+        return res.send('🚀 السيرفر شغال تمام');
     }
 });
 
