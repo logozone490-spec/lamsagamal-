@@ -5,26 +5,30 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-// Railway بيحدد البورت تلقائياً أو بيقرأ 8080
+
+// Railway بيحدد المنفذ تلقائياً عبر process.env.PORT
 const PORT = process.env.PORT || 8080;
 
-// 1. Middlewares
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. تشغيل الملفات الثابتة (CSS, JS, الصور)
+// تشغيل الملفات الثابتة (مجلد public والمجلد الرئيسي)
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
-// 3. الاتصال بقاعدة البيانات
+// الاتصال بقاعدة البيانات
 const MONGODB_URI = process.env.MONGODB_URI;
+
 if (MONGODB_URI) {
-  mongoose.connect(MONGODB_URI)
-    .then(() => console.log('✅ تم الاتصال بقاعدة البيانات بنجاح!'))
-    .catch((err) => console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err));
+    mongoose.connect(MONGODB_URI)
+        .then(() => console.log('✅ تم الاتصال بقاعدة البيانات MongoDB بنجاح!'))
+        .catch((err) => console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err.message));
+} else {
+    console.warn('⚠️ تنبيه: لم يتم تحديد MONGODB_URI في متغيرات البيئة.');
 }
 
-// 4. عرض الصفحة الرئيسية
+// عرض الصفحة الرئيسية للموقع
 app.get('/', (req, res) => {
     const publicIndex = path.join(__dirname, 'public', 'index.html');
     const rootIndex = path.join(__dirname, 'index.html');
@@ -34,11 +38,25 @@ app.get('/', (req, res) => {
     } else if (fs.existsSync(rootIndex)) {
         return res.sendFile(rootIndex);
     } else {
-        return res.send('<h1 style="text-align:center; margin-top:50px;">🚀 السيرفر شغال تمام ومربوط بـ Railway!</h1>');
+        return res.send(`
+            <div style="font-family: system-ui, sans-serif; text-align: center; margin-top: 80px; color: #333;">
+                <h1 style="color: #4A90E2; font-size: 2.2rem;">🚀 موقع لمسة جمال يعمل بنجاح!</h1>
+                <p style="font-size: 1.1rem;">السيرفر متصل بقاعدة البيانات وقائم على Railway.</p>
+            </div>
+        `);
     }
 });
 
-// 5. تشغيل السيرفر على جميع الواجهات
+// لمنع السيرفر من الانهيار المفاجئ
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+});
+
+// تشغيل السيرفر على جميع الواجهات 0.0.0.0
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 السيرفر شغال تمام على المنفذ ${PORT}`);
 });
